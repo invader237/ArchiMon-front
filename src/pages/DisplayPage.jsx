@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { getArchimon } from '../utils/api/api';
+import { useNavigate } from "react-router-dom";
+
 
 const DisplayPage = ({ backgroundColor = "#ff00ff", textColor = "#00ff00", buttonColor = "#ffcc00" }) => {
+    const navigate = useNavigate();
+
     const [archimons, setArchimons] = useState([]);
 
     useEffect(() => {
         const fetchArchimon = async () => {
             try {
                 const response = await getArchimon();
-                setArchimons(response);
-                console.log('Archimons récupérés avec succès :', response);
+                console.log(response);
+                if (response) {
+                    setArchimons(response);
+                }
+                else {
+                    console.error('Erreur lors de la récupération des données :', response.status);
+                }
             } catch (error) {
                 console.error('Erreur lors de la récupération des Archimons :', error);
             }
@@ -54,7 +63,7 @@ const DisplayPage = ({ backgroundColor = "#ff00ff", textColor = "#00ff00", butto
                     🔄 Rafraîchir
                 </button>
 
-                <button onClick={() => window.location.href = "/create"} style={{
+                <button onClick={() => navigate("/create")} style={{
                     backgroundColor: buttonColor,
                     fontSize: "1.5rem",
                     padding: "10px 20px",
@@ -67,6 +76,22 @@ const DisplayPage = ({ backgroundColor = "#ff00ff", textColor = "#00ff00", butto
                     transition: "transform 0.3s ease",
                 }}>Création d'Archimon</button>
             </div>
+
+            <button onClick={() => navigate("/chooseTeam")} style={{
+                backgroundColor: buttonColor,
+                fontSize: "1.5rem",
+                padding: "10px 20px",
+                border: "none",
+                borderRadius: "20px",
+                cursor: "pointer",
+                boxShadow: "5px 5px 0px black",
+                animation: "spin 2s linear infinite",
+                margin: "0 10px",
+                transition: "transform 0.3s ease",
+            }}>
+                🛡️ Créer un combat
+            </button>
+
 
             <div style={{
                 display: "grid",
@@ -96,13 +121,22 @@ const DisplayPage = ({ backgroundColor = "#ff00ff", textColor = "#00ff00", butto
                     onMouseOver={(e) => e.target.style.transform = "scale(1.1)"}
                     onMouseOut={(e) => e.target.style.transform = "scale(1)"}
                     >
-                        <img src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-CHR2TDfocQTL9DabkzkDxA1A/user-Cvl5ioxKMALAMNnNS07SQFk8/img-fRjqrT6VHItE2wKanifXQnWV.png?st=2025-03-12T15%3A13%3A03Z&se=2025-03-12T17%3A13%3A03Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-03-11T23%3A24%3A38Z&ske=2025-03-12T23%3A24%3A38Z&sks=b&skv=2024-08-04&sig=3URJUNiqUm/3rYNhHLnIgmwAUgCsCSUQJ8CycBNjpHg%3D" alt="archimon" style={{ width: "100px", height: "100px", borderRadius: "50%" }} />
-                        
+                        <img src={archimon.urlImage} alt="archimon" style={{ width: "100px", height: "100px", borderRadius: "50%" }} />
                         <h2 style={{ color: "#ffcc00", fontSize: "1.5rem", marginBottom: "10px" }}>🔥 {archimon.nom.toUpperCase()} 🔥</h2>
+                        <p>📜 {archimon.description}</p>                      
                         <p>❤️ PV: {archimon.pv}</p>
-                        <p>⚔️ Attaque: {archimon.attaque}</p>
-                        <p>🛡️ Défense: {archimon.defense}</p>
-                        <p>⚡ Vitesse: {archimon.vitesse}</p>
+                        <div className="type-badges">
+                            {archimon.types.map((type) => (
+                                <div key={type.id} className="type-badge">
+                                <img src={type.image} alt={type.libelle} />
+                                </div>
+                            ))}
+                            </div>
+                        <p>⚔️ Attaque: {archimon.atk}</p>
+                        <p>🔥 Vitesse attaque: {archimon.spAtk}</p>
+                        <p>🛡️ Défense: {archimon.def}</p>
+                        <p>💧 Vitesse défense: {archimon.spDef}</p>
+                        <p>⚡ Vitesse: {archimon.spd}</p>
                     </div>
                 )) : <p>Aucun Archimon trouvé... 🧐</p>}
             </div>
