@@ -186,15 +186,26 @@ const CombatPage = ({ backgroundColor = "#ff00ff", textColor = "#00ff00", button
             {lockedTeam1 && lockedTeam2 && (
                 <div style={{ textAlign: "center", marginTop: "5px" }}>
                     <button
-                        onClick={() => {
-                            // Logique pour lancer le combat (ou naviguer vers la page de combat)
-                            console.log("Combat lancé entre", selectedTeam1, selectedTeam2);
-                            navigate('/battle', {
-                                state: {
-                                    team1: selectedTeam1,
-                                    team2: selectedTeam2
-                                }
-                            });
+                        onClick={async () => {
+                            try {
+                                const response = await axios.post('http://localhost:8080/combat', {
+                                    idFirstTeam: selectedTeam1.value,
+                                    idSecondTeam: selectedTeam2.value
+                                });
+
+                                const combat = response.data;
+
+                                navigate('/battle', {
+                                    state: {
+                                        team1: selectedTeam1,
+                                        team2: selectedTeam2,
+                                        combat: combat
+                                    }
+                                });
+                            } catch (error) {
+                                console.error("Erreur lors de la création du combat :", error);
+                                alert("Erreur lors de la création du combat. Veuillez réessayer.");
+                            }
                         }}
                         style={{
                             backgroundColor: "#ff4444",
